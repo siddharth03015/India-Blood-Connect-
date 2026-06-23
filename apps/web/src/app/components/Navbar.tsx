@@ -4,13 +4,16 @@ import { useState, useEffect } from 'react';
 import { supabase } from 'shared';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import { useTheme } from './ThemeProvider';
 
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
+  const { theme, resolvedTheme, setTheme } = useTheme();
   const [user, setUser] = useState<any>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [themeMenuOpen, setThemeMenuOpen] = useState(false);
 
   useEffect(() => {
     const checkUser = async () => {
@@ -32,6 +35,14 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Close theme menu on click outside
+  useEffect(() => {
+    if (!themeMenuOpen) return;
+    const handler = () => setThemeMenuOpen(false);
+    window.addEventListener('click', handler);
+    return () => window.removeEventListener('click', handler);
+  }, [themeMenuOpen]);
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     setUser(null);
@@ -46,6 +57,29 @@ export default function Navbar() {
   ];
 
   const isActive = (href: string) => pathname === href;
+
+  // Theme icons
+  const SunIcon = () => (
+    <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="5" />
+      <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+    </svg>
+  );
+
+  const MoonIcon = () => (
+    <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+      <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
+    </svg>
+  );
+
+  const MonitorIcon = () => (
+    <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+      <rect x="2" y="3" width="20" height="14" rx="2" />
+      <path d="M8 21h8M12 17v4" />
+    </svg>
+  );
+
+  const currentIcon = resolvedTheme === 'dark' ? <MoonIcon /> : <SunIcon />;
 
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
@@ -84,8 +118,51 @@ export default function Navbar() {
             ))}
           </div>
 
-          {/* Auth Actions */}
-          <div className="hidden md:flex items-center gap-3">
+          {/* Auth + Theme Actions */}
+          <div className="hidden md:flex items-center gap-2">
+            {/* Theme Toggle */}
+            <div className="relative">
+              <button
+                onClick={(e) => { e.stopPropagation(); setThemeMenuOpen(!themeMenuOpen); }}
+                className="p-2.5 rounded-xl text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:text-white dark:hover:bg-neutral-800 transition-all"
+                aria-label="Toggle theme"
+                title={`Theme: ${theme}`}
+              >
+                {currentIcon}
+              </button>
+
+              {themeMenuOpen && (
+                <div className="absolute right-0 mt-2 w-40 bg-white dark:bg-neutral-900 rounded-xl shadow-xl border border-neutral-200 dark:border-neutral-700 py-1 animate-scale-in z-50" onClick={(e) => e.stopPropagation()}>
+                  {[
+                    { key: 'light' as const, label: 'Light', icon: <SunIcon /> },
+                    { key: 'dark' as const, label: 'Dark', icon: <MoonIcon /> },
+                    { key: 'system' as const, label: 'System', icon: <MonitorIcon /> },
+                  ].map(opt => (
+                    <button
+                      key={opt.key}
+                      onClick={() => { setTheme(opt.key); setThemeMenuOpen(false); }}
+                      className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm font-semibold transition-all ${
+                        theme === opt.key
+                          ? 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-500/10'
+                          : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800'
+                      }`}
+                    >
+                      <span className="opacity-70">{opt.icon}</span>
+                      {opt.label}
+                      {theme === opt.key && (
+                        <svg className="w-4 h-4 ml-auto text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
+                        </svg>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Divider */}
+            <div className="w-px h-6 bg-neutral-200 dark:bg-neutral-700 mx-1"></div>
+
             {user ? (
               <>
                 <Link
@@ -125,20 +202,34 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* Mobile Menu Toggle */}
-          <button
-            onClick={() => setMenuOpen(!menuOpen)}
-            className="md:hidden p-2 rounded-xl text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800 transition-all"
-            aria-label="Toggle menu"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              {menuOpen ? (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              )}
-            </svg>
-          </button>
+          {/* Mobile: Theme + Menu Toggle */}
+          <div className="flex md:hidden items-center gap-1">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                // Quick cycle: light → dark → system → light
+                const next = theme === 'light' ? 'dark' : theme === 'dark' ? 'system' : 'light';
+                setTheme(next);
+              }}
+              className="p-2 rounded-xl text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800 transition-all"
+              aria-label="Toggle theme"
+            >
+              {theme === 'system' ? <MonitorIcon /> : currentIcon}
+            </button>
+            <button
+              onClick={() => setMenuOpen(!menuOpen)}
+              className="p-2 rounded-xl text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800 transition-all"
+              aria-label="Toggle menu"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {menuOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                )}
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -160,6 +251,32 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
+
+            {/* Mobile Theme Selector */}
+            <div className="px-4 py-3">
+              <p className="text-xs font-semibold text-neutral-400 uppercase tracking-wider mb-2">Theme</p>
+              <div className="flex gap-2">
+                {[
+                  { key: 'light' as const, label: 'Light', icon: <SunIcon /> },
+                  { key: 'dark' as const, label: 'Dark', icon: <MoonIcon /> },
+                  { key: 'system' as const, label: 'Auto', icon: <MonitorIcon /> },
+                ].map(opt => (
+                  <button
+                    key={opt.key}
+                    onClick={() => setTheme(opt.key)}
+                    className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                      theme === opt.key
+                        ? 'bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400 border border-red-200 dark:border-red-500/20'
+                        : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 border border-transparent'
+                    }`}
+                  >
+                    {opt.icon}
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             <hr className="border-neutral-200 dark:border-neutral-800 my-2" />
             {user ? (
               <>

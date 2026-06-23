@@ -30,17 +30,15 @@
   --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #0a0a0a;
-    --bg-card: #171717;
-    --text: #fafafa;
-    --text-muted: #a3a3a3;
-    --border: #262626;
-    --glass-bg: rgba(23, 23, 23, 0.8);
-    --glass-border: rgba(255, 255, 255, 0.08);
-    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  }
+.dark {
+  --bg: #0a0a0a;
+  --bg-card: #171717;
+  --text: #fafafa;
+  --text-muted: #a3a3a3;
+  --border: #262626;
+  --glass-bg: rgba(23, 23, 23, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
 * {

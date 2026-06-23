@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { supabase } from 'shared';
+import { supabase, getCanDonateTo, type BloodGroup } from 'shared';
 import { useRouter } from 'next/navigation';
 import { MapPin, Search, Droplet, Clock, CheckCircle2, Navigation } from 'lucide-react';
 
@@ -54,7 +54,7 @@ export default function SearchDonors() {
   };
 
   return (
-    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 font-sans selection:bg-rose-500/30">
+    <div className="font-sans selection:bg-rose-500/30">
       {/* Hero Section */}
       <div className="relative overflow-hidden bg-gradient-to-b from-rose-600 to-rose-900 text-white py-20 px-6 sm:px-12">
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
@@ -171,6 +171,10 @@ export default function SearchDonors() {
                       <span className="bg-gradient-to-br from-rose-500 to-rose-700 text-white font-black text-lg px-3 py-1 rounded-lg shadow-sm">
                         {donor.blood_group}
                       </span>
+                      <div className="text-[10px] text-neutral-400 font-semibold uppercase tracking-wider text-right">
+                        Can donate to:<br/>
+                        <span className="text-neutral-600 dark:text-neutral-300 font-bold">{getCanDonateTo(donor.blood_group as BloodGroup).join(', ')}</span>
+                      </div>
                     </div>
                   </div>
                   
