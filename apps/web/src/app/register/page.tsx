@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { supabase, ALL_BLOOD_GROUPS, type BloodGroup } from 'shared';
 import { useRouter } from 'next/navigation';
+import CityAutocomplete from '../components/CityAutocomplete';
 
 export default function Register() {
   const router = useRouter();
@@ -192,8 +193,13 @@ export default function Register() {
               <div className="space-y-5 animate-fade-in">
                 <div>
                   <label className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-2">City</label>
-                  <input required type="text" name="city" value={formData.city} onChange={handleChange}
-                    className="w-full px-4 py-3.5 bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500/50 transition-all font-medium text-neutral-900 dark:text-white" />
+                  <CityAutocomplete
+                    value={formData.city}
+                    onChange={(val) => setFormData({ ...formData, city: val })}
+                    placeholder="Type your city name..."
+                    required
+                    className="w-full px-4 py-3.5 bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500/50 transition-all font-medium text-neutral-900 dark:text-white"
+                  />
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-2">Locality / Area</label>

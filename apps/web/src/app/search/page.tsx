@@ -4,11 +4,12 @@ import { useState } from 'react';
 import { supabase, getCanDonateTo, type BloodGroup } from 'shared';
 import { useRouter } from 'next/navigation';
 import { MapPin, Search, Droplet, Clock, CheckCircle2, Navigation } from 'lucide-react';
+import CityAutocomplete from '../components/CityAutocomplete';
 
 export default function SearchDonors() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [bloodGroup, setBloodGroup] = useState('O+');
+  const [bloodGroup, setBloodGroup] = useState('');
   const [city, setCity] = useState('');
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [results, setResults] = useState<any[]>([]);
@@ -28,8 +29,17 @@ export default function SearchDonors() {
         lat = position.coords.latitude;
         lng = position.coords.longitude;
       } catch {
-        alert('Could not get location. Using text search only.');
+        alert('Could not get location. Please enter a city name instead.');
+        setLoading(false);
+        return;
       }
+    }
+
+    // If not using location and no city entered, prompt the user
+    if (!useLocation && !city.trim()) {
+      alert('Please enter a city name to search for donors.');
+      setLoading(false);
+      return;
     }
 
     const { data, error } = await supabase.rpc('search_donors_nearby', {
@@ -37,7 +47,7 @@ export default function SearchDonors() {
       search_lng: lng,
       radius_meters: radius,
       filter_blood_group: bloodGroup || null,
-      filter_city: useLocation ? null : (city || null)
+      filter_city: useLocation ? null : (city.trim() || null)
     });
 
     setLoading(false);
@@ -101,14 +111,13 @@ export default function SearchDonors() {
             
             <div className="md:col-span-5 space-y-2">
               <label className="text-sm font-semibold text-neutral-600 dark:text-neutral-400 flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-rose-500" /> Location (City/Pincode)
+                <MapPin className="w-4 h-4 text-rose-500" /> City <span className="text-rose-500">*</span>
               </label>
-              <input 
-                type="text" 
-                value={city} 
-                onChange={(e) => setCity(e.target.value)} 
-                placeholder="e.g. Mumbai, 400001" 
-                className="w-full bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-neutral-100 rounded-xl px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-rose-500/50 focus:border-rose-500 transition-all font-medium placeholder-neutral-400" 
+              <CityAutocomplete
+                value={city}
+                onChange={setCity}
+                placeholder="Type city name... e.g. Mumbai, Delhi, Bangalore"
+                className="w-full bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-neutral-100 rounded-xl px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-rose-500/50 focus:border-rose-500 transition-all font-medium placeholder-neutral-400"
               />
             </div>
 
@@ -124,13 +133,16 @@ export default function SearchDonors() {
               <button 
                 onClick={() => handleSearch(true)} 
                 disabled={loading}
-                title="Search Near Me"
+                title="Search Near Me (GPS)"
                 className="px-5 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-300 rounded-xl font-semibold flex items-center justify-center transition-all transform active:scale-[0.98] border border-neutral-200 dark:border-neutral-700 disabled:opacity-70"
               >
                 <Navigation className="w-5 h-5" />
               </button>
             </div>
           </div>
+          <p className="text-xs text-neutral-400 mt-3 flex items-center gap-1.5">
+            <MapPin className="w-3 h-3" /> Enter a city name or use the GPS button to find donors near your current location.
+          </p>
         </div>
 
         {/* Results Section */}
@@ -148,79 +160,88 @@ export default function SearchDonors() {
               <Search className="w-8 h-8 text-neutral-400" />
             </div>
             <h3 className="text-2xl font-bold text-neutral-800 dark:text-neutral-200 mb-2">No donors found</h3>
-            <p className="text-neutral-500 max-w-md mx-auto">We couldn&apos;t find any donors matching your criteria. Try adjusting your filters or expanding your search area.</p>
+            <p className="text-neutral-500 max-w-md mx-auto">We couldn&apos;t find any donors matching your criteria in <strong>{city}</strong>. Try a nearby city or a different blood group.</p>
           </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {results.map((donor, idx) => (
-              <div 
-                key={donor.id} 
-                className="group bg-white dark:bg-neutral-900 rounded-2xl p-6 border border-neutral-100 dark:border-neutral-800 shadow-sm hover:shadow-xl hover:shadow-rose-900/5 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between"
-                style={{ animationDelay: `${idx * 50}ms`, animationFillMode: 'both' }}
-              >
-                <div>
-                  <div className="flex justify-between items-start mb-5">
-                    <div>
-                      <h3 className="text-xl font-bold text-neutral-900 dark:text-white group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors">{donor.name}</h3>
-                      <div className="flex items-center text-neutral-500 text-sm mt-1 gap-1.5 font-medium">
-                        <MapPin className="w-3.5 h-3.5" /> 
-                        {donor.locality}, {donor.city}
+        ) : searched ? (
+          <>
+            <div className="mb-6 flex items-center justify-between">
+              <p className="text-sm text-neutral-500 font-medium">
+                Showing <span className="text-neutral-900 dark:text-white font-bold">{results.length}</span> donor{results.length !== 1 ? 's' : ''} 
+                {city && <> in <span className="text-rose-600 dark:text-rose-400 font-bold">{city}</span></>}
+                {bloodGroup && <> with blood group <span className="text-rose-600 dark:text-rose-400 font-bold">{bloodGroup}</span></>}
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {results.map((donor, idx) => (
+                <div 
+                  key={donor.id} 
+                  className="group bg-white dark:bg-neutral-900 rounded-2xl p-6 border border-neutral-100 dark:border-neutral-800 shadow-sm hover:shadow-xl hover:shadow-rose-900/5 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between"
+                  style={{ animationDelay: `${idx * 50}ms`, animationFillMode: 'both' }}
+                >
+                  <div>
+                    <div className="flex justify-between items-start mb-5">
+                      <div>
+                        <h3 className="text-xl font-bold text-neutral-900 dark:text-white group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors">{donor.name}</h3>
+                        <div className="flex items-center text-neutral-500 text-sm mt-1 gap-1.5 font-medium">
+                          <MapPin className="w-3.5 h-3.5" /> 
+                          {donor.locality}, {donor.city}
+                        </div>
+                      </div>
+                      <div className="flex flex-col items-end gap-2">
+                        <span className="bg-gradient-to-br from-rose-500 to-rose-700 text-white font-black text-lg px-3 py-1 rounded-lg shadow-sm">
+                          {donor.blood_group}
+                        </span>
+                        <div className="text-[10px] text-neutral-400 font-semibold uppercase tracking-wider text-right">
+                          Can donate to:<br/>
+                          <span className="text-neutral-600 dark:text-neutral-300 font-bold">{getCanDonateTo(donor.blood_group as BloodGroup).join(', ')}</span>
+                        </div>
                       </div>
                     </div>
-                    <div className="flex flex-col items-end gap-2">
-                      <span className="bg-gradient-to-br from-rose-500 to-rose-700 text-white font-black text-lg px-3 py-1 rounded-lg shadow-sm">
-                        {donor.blood_group}
-                      </span>
-                      <div className="text-[10px] text-neutral-400 font-semibold uppercase tracking-wider text-right">
-                        Can donate to:<br/>
-                        <span className="text-neutral-600 dark:text-neutral-300 font-bold">{getCanDonateTo(donor.blood_group as BloodGroup).join(', ')}</span>
+                    
+                    <div className="space-y-3 mb-6 bg-neutral-50 dark:bg-neutral-950/50 p-4 rounded-xl border border-neutral-100 dark:border-neutral-800/50">
+                      {donor.distance_meters !== null && (
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-neutral-500 flex items-center gap-2"><Navigation className="w-4 h-4" /> Distance</span>
+                          <span className="font-semibold text-neutral-700 dark:text-neutral-300">~{(donor.distance_meters / 1000).toFixed(1)} km</span>
+                        </div>
+                      )}
+                      
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-neutral-500 flex items-center gap-2"><Clock className="w-4 h-4" /> Last Donated</span>
+                        <span className="font-semibold text-neutral-700 dark:text-neutral-300">
+                          {donor.last_donated_at ? new Date(donor.last_donated_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) : 'Never/Unknown'}
+                        </span>
                       </div>
                     </div>
                   </div>
                   
-                  <div className="space-y-3 mb-6 bg-neutral-50 dark:bg-neutral-950/50 p-4 rounded-xl border border-neutral-100 dark:border-neutral-800/50">
-                    {donor.distance_meters !== null && (
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-neutral-500 flex items-center gap-2"><Navigation className="w-4 h-4" /> Distance</span>
-                        <span className="font-semibold text-neutral-700 dark:text-neutral-300">~{(donor.distance_meters / 1000).toFixed(1)} km</span>
-                      </div>
+                  <div className="mt-auto pt-4 border-t border-neutral-100 dark:border-neutral-800 flex justify-between items-center">
+                    {donor.is_available_to_donate ? (
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-semibold text-xs rounded-full border border-emerald-200 dark:border-emerald-500/20">
+                        <span className="relative flex h-2 w-2">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                        </span>
+                        Available Now
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-neutral-100 dark:bg-neutral-800 text-neutral-500 font-medium text-xs rounded-full">
+                        Unavailable
+                      </span>
                     )}
                     
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-neutral-500 flex items-center gap-2"><Clock className="w-4 h-4" /> Last Donated</span>
-                      <span className="font-semibold text-neutral-700 dark:text-neutral-300">
-                        {donor.last_donated_at ? new Date(donor.last_donated_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) : 'Never/Unknown'}
-                      </span>
-                    </div>
+                    <button 
+                      onClick={() => handleRequest(donor.id)} 
+                      className="px-5 py-2.5 bg-neutral-900 hover:bg-neutral-800 dark:bg-white dark:hover:bg-neutral-200 text-white dark:text-neutral-900 rounded-xl font-bold text-sm transition-all transform active:scale-95 shadow-md flex items-center gap-2"
+                    >
+                      Request <CheckCircle2 className="w-4 h-4" />
+                    </button>
                   </div>
                 </div>
-                
-                <div className="mt-auto pt-4 border-t border-neutral-100 dark:border-neutral-800 flex justify-between items-center">
-                  {donor.is_available_to_donate ? (
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-semibold text-xs rounded-full border border-emerald-200 dark:border-emerald-500/20">
-                      <span className="relative flex h-2 w-2">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                      </span>
-                      Available Now
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-neutral-100 dark:bg-neutral-800 text-neutral-500 font-medium text-xs rounded-full">
-                      Unavailable
-                    </span>
-                  )}
-                  
-                  <button 
-                    onClick={() => handleRequest(donor.id)} 
-                    className="px-5 py-2.5 bg-neutral-900 hover:bg-neutral-800 dark:bg-white dark:hover:bg-neutral-200 text-white dark:text-neutral-900 rounded-xl font-bold text-sm transition-all transform active:scale-95 shadow-md flex items-center gap-2"
-                  >
-                    Request <CheckCircle2 className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+              ))}
+            </div>
+          </>
+        ) : null}
       </div>
     </div>
   );
