@@ -20,9 +20,11 @@ This project was engineered with a focus on speed, modern UI/UX, and scalability
 * **📍 Geospatial Donor Search:** Built with PostgreSQL PostGIS. Users can tap "Near Me" to use their device GPS and instantly find donors within a 50km radius, sorted by distance.
 * **🏙️ Comprehensive City Search:** Features a custom fuzzy-search autocomplete component loaded with over 750+ major and minor Indian cities, allowing precise location-based filtering.
 * **💬 Real-Time Chat System:** Integrated with Supabase Realtime (WebSockets) to facilitate instant, direct communication between the recipient and the donor. Features optimistic UI updates for zero-latency message rendering.
-* **🔐 Secure Authentication:** Seamless Phone Number and Password-based authentication.
-* **🌓 Modern UI/UX:** Stunning, responsive interface built with Tailwind CSS. Includes full Dark Mode support, glassmorphism overlays, and smooth micro-animations for a premium user experience.
 * **🩸 Smart Blood Group Matching:** Visual badges mapping exactly who can donate to whom (e.g., O- universal donor logic).
+* **📚 Educational Hub:** Interactive pages detailing the blood donation process, pre/post-donation pursuits, and guidelines, complemented by custom aesthetic doodle illustrations.
+* **🏥 Blood Camps & Banks Ecosystem:** Dedicated platform modules for discovering verified blood banks and dynamically registering new blood donation camps across India.
+* **🛡️ Trust & Engagement:** Comprehensive and accessible Privacy Policy, Terms of Service, About Us (with vision/mission statements), and Contact platforms fully integrated to build a trustworthy network.
+* **🌓 Modern UI/UX:** Stunning, responsive interface built with Tailwind CSS. Includes a premium custom SVG-based branding logo, full Dark Mode support, glassmorphism overlays, and smooth micro-animations for an exceptional user experience.
 
 ---
 
