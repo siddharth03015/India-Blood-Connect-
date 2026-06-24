@@ -2,211 +2,240 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { supabase } from 'shared';
 
 export default function Home() {
   const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  const [stats, setStats] = useState({ donors: 0, lives: 0, cities: 0 });
+
+  useEffect(() => {
+    setMounted(true);
+    const fetchStats = async () => {
+      const { count: donorsCount } = await supabase.from('users').select('*', { count: 'exact', head: true });
+      const { data: users } = await supabase.from('users').select('city');
+      const uniqueCities = new Set(users?.map(u => u.city?.toLowerCase().trim()).filter(Boolean)).size;
+      const totalDonors = donorsCount || 0;
+      setStats({ donors: totalDonors, lives: totalDonors * 3, cities: uniqueCities || 0 });
+    };
+    fetchStats();
+  }, []);
 
   return (
-    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950">
-      {/* ─── Hero ─── */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-red-600 via-red-700 to-red-900 text-white">
-        {/* Background decoration */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-40 -right-40 w-96 h-96 bg-red-400/20 rounded-full blur-3xl"></div>
-          <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-orange-400/10 rounded-full blur-3xl"></div>
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-red-500/10 rounded-full blur-3xl"></div>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-[#fcfafb] to-[#fdf2f2] dark:from-neutral-950 dark:to-neutral-900 text-neutral-900 dark:text-white overflow-hidden">
+      
+      {/* Background soft red blob */}
+      <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-red-100/50 dark:bg-red-900/10 rounded-full blur-[100px] -translate-y-1/4 translate-x-1/4 pointer-events-none"></div>
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32 lg:py-40 text-center">
-          {/* Badge */}
-          <div className={`inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md rounded-full border border-white/20 mb-8 ${mounted ? 'animate-fade-in' : 'opacity-0'}`}>
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-green-400"></span>
-            </span>
-            <span className="text-sm font-semibold text-white/90">Live Donor Network Across India</span>
-          </div>
-
-          {/* Heart Icon */}
-          <div className={`mb-8 ${mounted ? 'animate-slide-up' : 'opacity-0'}`}>
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-white/10 backdrop-blur-md rounded-3xl border border-white/20 shadow-2xl animate-float">
-              <svg className="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-              </svg>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-20 lg:pt-40 lg:pb-28">
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-16">
+          
+          {/* Left Column: Content */}
+          <div className="flex-1 text-left w-full relative z-10">
+            {/* Badge */}
+            <div className={`inline-flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-neutral-800 rounded-full border border-red-100 dark:border-red-900 shadow-sm mb-6 ${mounted ? 'animate-fade-in' : 'opacity-0'}`}>
+              <span className="relative flex h-2 w-2 ml-1">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+              </span>
+              <span className="text-sm font-bold text-red-600 dark:text-red-400">Live Donor Network Across India</span>
             </div>
-          </div>
 
-          {/* Title */}
-          <h1 className={`text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight mb-6 text-gradient-hero ${mounted ? 'animate-slide-up delay-100' : 'opacity-0'}`}>
-            India Blood Connect
-          </h1>
-          <p className={`text-lg sm:text-xl lg:text-2xl text-red-100/80 max-w-3xl mx-auto mb-10 font-medium leading-relaxed ${mounted ? 'animate-slide-up delay-200' : 'opacity-0'}`}>
-            A nationwide network connecting blood donors with those in need.
-            Find compatible donors nearby in seconds. Every drop counts.
-          </p>
+            {/* Title */}
+            <h1 className={`text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-[1.1] text-slate-800 dark:text-white mb-6 ${mounted ? 'animate-slide-up delay-100' : 'opacity-0'}`}>
+              Every Drop <br/>
+              Saves a <span className="text-red-600 dark:text-red-500">Life</span> 
+              <span className="inline-block ml-2 text-red-600 animate-pulse-soft">❤</span>
+            </h1>
 
-          {/* CTA Buttons */}
-          <div className={`flex flex-col sm:flex-row items-center justify-center gap-4 ${mounted ? 'animate-slide-up delay-300' : 'opacity-0'}`}>
-            <Link
-              href="/search"
-              className="px-8 py-4 bg-white text-red-600 rounded-2xl font-bold text-lg shadow-2xl shadow-black/20 hover:shadow-black/30 hover:-translate-y-0.5 transition-all active:scale-[0.97] flex items-center gap-3"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-              Find Blood Now
-            </Link>
-            <Link
-              href="/login"
-              className="px-8 py-4 bg-white/10 backdrop-blur-md text-white border border-white/30 rounded-2xl font-bold text-lg hover:bg-white/20 transition-all active:scale-[0.97] flex items-center gap-3"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-              </svg>
-              Register as Donor
-            </Link>
-          </div>
-        </div>
+            {/* Subtitle */}
+            <p className={`text-lg text-slate-500 dark:text-neutral-400 max-w-xl mb-10 leading-relaxed font-medium ${mounted ? 'animate-slide-up delay-200' : 'opacity-0'}`}>
+              India Blood Connect is a nationwide platform that connects blood donors with those in urgent need. Find compatible donors near you in seconds.
+            </p>
 
-        {/* Wave divider */}
-        <div className="absolute bottom-0 left-0 right-0">
-          <svg viewBox="0 0 1440 60" fill="none" className="w-full h-auto">
-            <path d="M0 60V20C240 0 480 40 720 30C960 20 1200 0 1440 20V60H0Z" className="fill-neutral-50 dark:fill-neutral-950" />
-          </svg>
-        </div>
-      </section>
-
-      {/* ─── How It Works ─── */}
-      <section className="py-20 sm:py-28 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-neutral-900 dark:text-white mb-4 tracking-tight">
-            How It Works
-          </h2>
-          <p className="text-neutral-500 dark:text-neutral-400 text-lg max-w-2xl mx-auto">
-            Three simple steps to connect with a blood donor or save a life.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {[
-            {
-              step: '01',
-              title: 'Search or Request',
-              desc: 'Search by blood group & location, or post an emergency blood request to alert nearby donors.',
-              icon: (
-                <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              ),
-              color: 'from-red-500 to-orange-500',
-            },
-            {
-              step: '02',
-              title: 'Match & Connect',
-              desc: 'Our system finds compatible donors nearby using PostGIS location intelligence and blood type matching.',
-              icon: (
-                <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-              ),
-              color: 'from-indigo-500 to-purple-500',
-            },
-            {
-              step: '03',
-              title: 'Chat & Donate',
-              desc: 'Chat securely in-app to coordinate the donation. No phone numbers exposed until both parties agree.',
-              icon: (
-                <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                </svg>
-              ),
-              color: 'from-emerald-500 to-teal-500',
-            },
-          ].map((item, idx) => (
-            <div
-              key={idx}
-              className={`group relative bg-white dark:bg-neutral-900 rounded-3xl p-8 border border-neutral-100 dark:border-neutral-800 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 ${mounted ? 'animate-slide-up' : 'opacity-0'}`}
-              style={{ animationDelay: `${200 + idx * 100}ms` }}
-            >
-              <div className={`inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br ${item.color} rounded-2xl text-white shadow-lg mb-6`}>
-                {item.icon}
+            {/* Feature Pills */}
+            <div className={`flex flex-wrap items-center gap-4 mb-10 ${mounted ? 'animate-slide-up delay-300' : 'opacity-0'}`}>
+              <div className="flex items-center gap-3 bg-white dark:bg-neutral-900 px-4 py-2.5 rounded-2xl border border-red-50 dark:border-neutral-800 shadow-sm">
+                <div className="w-10 h-10 bg-red-50 dark:bg-red-500/10 rounded-full flex items-center justify-center text-red-600">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                </div>
+                <div>
+                  <div className="text-sm font-bold text-slate-800 dark:text-white">Verified Donors</div>
+                  <div className="text-xs text-slate-400">Safe & Trusted</div>
+                </div>
               </div>
-              <div className="text-xs font-bold text-neutral-400 dark:text-neutral-500 mb-2 tracking-widest uppercase">{item.step}</div>
-              <h3 className="text-xl font-bold text-neutral-900 dark:text-white mb-3">{item.title}</h3>
-              <p className="text-neutral-500 dark:text-neutral-400 leading-relaxed">{item.desc}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ─── Stats ─── */}
-      <section className="py-16 bg-white dark:bg-neutral-900 border-y border-neutral-100 dark:border-neutral-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            {[
-              { value: '8', label: 'Blood Groups Supported' },
-              { value: '50km', label: 'Search Radius' },
-              { value: '24/7', label: 'Emergency Alerts' },
-              { value: 'Free', label: 'Always & Forever' },
-            ].map((stat, idx) => (
-              <div key={idx}>
-                <div className="text-3xl sm:text-4xl font-black text-gradient mb-2">{stat.value}</div>
-                <div className="text-sm font-semibold text-neutral-500 dark:text-neutral-400">{stat.label}</div>
+              <div className="flex items-center gap-3 bg-white dark:bg-neutral-900 px-4 py-2.5 rounded-2xl border border-red-50 dark:border-neutral-800 shadow-sm">
+                <div className="w-10 h-10 bg-red-50 dark:bg-red-500/10 rounded-full flex items-center justify-center text-red-600">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                </div>
+                <div>
+                  <div className="text-sm font-bold text-slate-800 dark:text-white">Find Near You</div>
+                  <div className="text-xs text-slate-400">Across India</div>
+                </div>
               </div>
-            ))}
+              <div className="flex items-center gap-3 bg-white dark:bg-neutral-900 px-4 py-2.5 rounded-2xl border border-red-50 dark:border-neutral-800 shadow-sm">
+                <div className="w-10 h-10 bg-red-50 dark:bg-red-500/10 rounded-full flex items-center justify-center text-red-600">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+                </div>
+                <div>
+                  <div className="text-sm font-bold text-slate-800 dark:text-white">100% Secure</div>
+                  <div className="text-xs text-slate-400">Your data is safe</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Buttons */}
+            <div className={`flex flex-wrap items-center gap-4 mb-10 ${mounted ? 'animate-slide-up delay-400' : 'opacity-0'}`}>
+              <Link href="/search" className="flex items-center gap-2 px-8 py-4 bg-red-600 hover:bg-red-700 text-white rounded-2xl font-bold shadow-lg shadow-red-500/30 transition-all active:scale-[0.98]">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                Find Blood Now
+              </Link>
+              <Link href="/login" className="flex items-center gap-2 px-8 py-4 bg-white dark:bg-neutral-900 border-2 border-red-100 dark:border-red-900/50 hover:border-red-600 text-red-600 dark:text-red-400 rounded-2xl font-bold shadow-sm hover:shadow-md transition-all active:scale-[0.98]">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>
+                Register as Donor
+              </Link>
+            </div>
+
+
           </div>
-        </div>
-      </section>
 
-      {/* ─── Quick Links ─── */}
-      <section className="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Link
-            href="/blood-banks"
-            className="group relative overflow-hidden bg-gradient-to-br from-indigo-500 to-purple-600 rounded-3xl p-8 text-white shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all duration-300"
-          >
-            <div className="absolute -top-12 -right-12 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
-            <h3 className="text-2xl font-bold mb-2">Blood Bank Directory</h3>
-            <p className="text-indigo-100/80 mb-4">Find verified blood banks across India — searchable by state and city.</p>
-            <span className="inline-flex items-center gap-2 text-sm font-bold group-hover:gap-3 transition-all">
-              Browse Directory →
-            </span>
-          </Link>
-          <Link
-            href="/camps"
-            className="group relative overflow-hidden bg-gradient-to-br from-emerald-500 to-teal-600 rounded-3xl p-8 text-white shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all duration-300"
-          >
-            <div className="absolute -top-12 -right-12 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
-            <h3 className="text-2xl font-bold mb-2">Donation Camp Finder</h3>
-            <p className="text-emerald-100/80 mb-4">Discover upcoming blood donation camps near you — organized by NGOs and hospitals.</p>
-            <span className="inline-flex items-center gap-2 text-sm font-bold group-hover:gap-3 transition-all">
-              View Camps →
-            </span>
-          </Link>
-        </div>
-      </section>
+          {/* Right Column: Graphic Hero */}
+          <div className={`flex-1 relative w-full max-w-[600px] h-[500px] flex items-center justify-center ${mounted ? 'animate-fade-in delay-200' : 'opacity-0'}`}>
+            
+            {/* Background dashed circles */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div className="w-[300px] h-[300px] rounded-full border border-dashed border-red-200 dark:border-red-900/50 animate-[spin_60s_linear_infinite]"></div>
+              <div className="absolute w-[450px] h-[450px] rounded-full border border-dashed border-red-100 dark:border-red-900/30 animate-[spin_80s_linear_infinite_reverse]"></div>
+            </div>
 
-      {/* ─── Footer ─── */}
-      <footer className="border-t border-neutral-200 dark:border-neutral-800 py-12 bg-white dark:bg-neutral-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <div className="w-8 h-8 bg-gradient-to-br from-red-500 to-red-700 rounded-xl flex items-center justify-center">
-              <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            {/* Connecting lines for cards */}
+            <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 0 }}>
+              <path d="M 120 120 L 250 250" stroke="#fca5a5" strokeWidth="2" strokeDasharray="4 4" fill="none" />
+              <path d="M 450 120 L 320 250" stroke="#fca5a5" strokeWidth="2" strokeDasharray="4 4" fill="none" />
+              <path d="M 120 380 L 250 300" stroke="#fca5a5" strokeWidth="2" strokeDasharray="4 4" fill="none" />
+              <path d="M 450 380 L 320 300" stroke="#fca5a5" strokeWidth="2" strokeDasharray="4 4" fill="none" />
+            </svg>
+
+            {/* Central Glossy Blood Drop */}
+            <div className="relative z-10 animate-float drop-shadow-2xl">
+              <svg width="220" height="260" viewBox="0 0 200 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <radialGradient id="dropGradient" cx="30%" cy="30%" r="70%" fx="30%" fy="30%">
+                    <stop offset="0%" stopColor="#ff4b4b" />
+                    <stop offset="40%" stopColor="#dc2626" />
+                    <stop offset="80%" stopColor="#991b1b" />
+                    <stop offset="100%" stopColor="#450a0a" />
+                  </radialGradient>
+                  <linearGradient id="glossGradient" x1="20%" y1="0%" x2="50%" y2="80%">
+                    <stop offset="0%" stopColor="white" stopOpacity="0.6" />
+                    <stop offset="100%" stopColor="white" stopOpacity="0" />
+                  </linearGradient>
+                  <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feDropShadow dx="0" dy="20" stdDeviation="25" floodColor="#991b1b" floodOpacity="0.5" />
+                  </filter>
+                </defs>
+                {/* Main Drop Body */}
+                <path d="M100 10 C100 10, 20 130, 20 190 A80 80 0 0 0 180 190 C180 130, 100 10, 100 10 Z" fill="url(#dropGradient)" filter="url(#shadow)" />
+                {/* Gloss Reflection */}
+                <path d="M100 20 C100 20, 35 125, 35 180 A65 70 0 0 0 80 245 C95 245, 95 20, 95 20 Z" fill="url(#glossGradient)" />
+                {/* White Heart Overlay */}
+                <path d="M100 180 C100 180, 75 155, 75 140 A15 15 0 0 1 100 125 A15 15 0 0 1 125 140 C125 155, 100 180, 100 180 Z" fill="white" className="drop-shadow-md" />
               </svg>
             </div>
-            <span className="font-bold text-neutral-900 dark:text-white">India Blood Connect</span>
+
+            {/* Floating Card: Find Donors (Top Left) */}
+            <div className="absolute top-4 left-0 bg-white dark:bg-neutral-800 p-4 rounded-3xl shadow-xl shadow-red-500/10 border border-red-50 dark:border-neutral-700 animate-[float_4s_ease-in-out_infinite_0s] z-20 flex flex-col items-center min-w-[120px]">
+              <div className="w-12 h-12 bg-red-50 dark:bg-red-500/10 rounded-full flex items-center justify-center text-red-600 mb-2">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+              </div>
+              <div className="text-sm font-black text-slate-800 dark:text-white">Find Donors</div>
+              <div className="text-xs font-medium text-slate-400">Near You</div>
+            </div>
+
+            {/* Floating Card: Request Blood (Top Right) */}
+            <div className="absolute top-12 right-0 bg-white dark:bg-neutral-800 p-4 rounded-3xl shadow-xl shadow-red-500/10 border border-red-50 dark:border-neutral-700 animate-[float_4s_ease-in-out_infinite_1s] z-20 flex flex-col items-center min-w-[120px]">
+              <div className="w-12 h-12 bg-red-50 dark:bg-red-500/10 rounded-full flex items-center justify-center text-red-600 mb-2">
+                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z"/></svg>
+              </div>
+              <div className="text-sm font-black text-slate-800 dark:text-white">Request Blood</div>
+              <div className="text-xs font-medium text-slate-400">Quick & Easy</div>
+            </div>
+
+            {/* Floating Card: Blood Banks (Bottom Left) */}
+            <div className="absolute bottom-12 left-0 bg-white dark:bg-neutral-800 p-4 rounded-3xl shadow-xl shadow-red-500/10 border border-red-50 dark:border-neutral-700 animate-[float_4s_ease-in-out_infinite_2s] z-20 flex flex-col items-center min-w-[120px]">
+              <div className="w-12 h-12 bg-red-50 dark:bg-red-500/10 rounded-full flex items-center justify-center text-red-600 mb-2">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
+              </div>
+              <div className="text-sm font-black text-slate-800 dark:text-white">Blood Banks</div>
+              <div className="text-xs font-medium text-slate-400">Directory</div>
+            </div>
+
+            {/* Floating Card: Join Camps (Bottom Right) */}
+            <div className="absolute bottom-4 right-8 bg-white dark:bg-neutral-800 p-4 rounded-3xl shadow-xl shadow-red-500/10 border border-red-50 dark:border-neutral-700 animate-[float_4s_ease-in-out_infinite_3s] z-20 flex flex-col items-center min-w-[120px]">
+              <div className="w-12 h-12 bg-red-50 dark:bg-red-500/10 rounded-full flex items-center justify-center text-red-600 mb-2">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+              </div>
+              <div className="text-sm font-black text-slate-800 dark:text-white">Join Camps</div>
+              <div className="text-xs font-medium text-slate-400">Save Lives</div>
+            </div>
+
           </div>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400 max-w-lg mx-auto mb-4">
-            A connector platform — we do not handle blood collection, storage, or screening. 
-            All donations must comply with NACO/NBTC guidelines.
-          </p>
-          <p className="text-xs text-neutral-400 dark:text-neutral-600">
-            © {new Date().getFullYear()} India Blood Connect. All rights reserved.
-          </p>
         </div>
-      </footer>
+      </div>
+
+      {/* Bottom Banner Stats */}
+      <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 ${mounted ? 'animate-slide-up delay-700' : 'opacity-0'}`}>
+        <div className="relative bg-gradient-to-r from-[#8a1212] to-[#c51919] rounded-3xl p-8 lg:p-12 shadow-2xl overflow-hidden flex flex-col lg:flex-row items-center justify-between gap-10">
+          
+          {/* Background huge quote mark */}
+          <div className="absolute -top-10 -left-6 text-[150px] leading-none text-white/5 font-serif pointer-events-none">"</div>
+          <div className="absolute bottom-0 right-0 w-64 h-64 bg-red-500/20 rounded-full blur-3xl pointer-events-none"></div>
+
+          {/* Left: Quote */}
+          <div className="flex-1 relative z-10 text-white max-w-xl pl-6 lg:border-l-4 lg:border-white/20">
+            <p className="text-xl lg:text-2xl font-medium leading-relaxed mb-4">
+              "The best way to find yourself is to lose yourself in the service of others."
+            </p>
+            <p className="text-white/70 font-semibold uppercase tracking-wider text-sm">
+              — Mahatma Gandhi
+            </p>
+          </div>
+
+          {/* Right: Stats */}
+          <div className="flex items-center flex-wrap lg:flex-nowrap gap-8 lg:gap-16 text-white relative z-10">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center">
+                <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z"/></svg>
+              </div>
+              <div>
+                <div className="text-3xl font-black">{stats.donors > 0 ? stats.donors.toLocaleString() : '2.5M+'}</div>
+                <div className="text-sm text-white/80 font-medium">Donors</div>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 13l2 2 4-4" /></svg>
+              </div>
+              <div>
+                <div className="text-3xl font-black">{stats.lives > 0 ? stats.lives.toLocaleString() : '8.7L+'}</div>
+                <div className="text-sm text-white/80 font-medium">Lives Saved</div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center">
+                <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" /></svg>
+              </div>
+              <div>
+                <div className="text-3xl font-black">{stats.cities > 0 ? stats.cities.toLocaleString() : '28,000+'}</div>
+                <div className="text-sm text-white/80 font-medium">Cities Covered</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
     </div>
   );
 }
