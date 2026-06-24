@@ -1,15 +1,54 @@
 'use client';
 
-import { useState } from 'react';
-import { Search, Building2, MapPin } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { supabase } from 'shared';
+import { Search, Building2, MapPin, CheckCircle2 } from 'lucide-react';
+
+const INDIAN_STATES = [
+  'Andaman and Nicobar Islands', 'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 
+  'Bihar', 'Chandigarh', 'Chhattisgarh', 'Dadra and Nagar Haveli and Daman and Diu', 
+  'Delhi', 'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jammu and Kashmir', 
+  'Jharkhand', 'Karnataka', 'Kerala', 'Ladakh', 'Lakshadweep', 'Madhya Pradesh', 
+  'Maharashtra', 'Manipur', 'Meghalaya', 'Mizoram', 'Nagaland', 'Odisha', 
+  'Puducherry', 'Punjab', 'Rajasthan', 'Sikkim', 'Tamil Nadu', 'Telangana', 
+  'Tripura', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal'
+];
 
 export default function BloodBanks() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [state, setState] = useState('');
-  const [searched, setSearched] = useState(false);
+  const [stateFilter, setStateFilter] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [bloodBanks, setBloodBanks] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetchBloodBanks();
+  }, []);
+
+  const fetchBloodBanks = async (query = '', selectedState = '') => {
+    setLoading(true);
+    let request = supabase.from('blood_banks').select('*').order('name');
+    
+    if (query) {
+      request = request.or(`name.ilike.%${query}%,city.ilike.%${query}%`);
+    }
+    if (selectedState) {
+      request = request.eq('state', selectedState);
+    }
+    
+    const { data, error } = await request;
+    if (!error && data) {
+      setBloodBanks(data);
+    }
+    setLoading(false);
+  };
 
   const handleSearch = () => {
-    setSearched(true);
+    fetchBloodBanks(searchQuery, stateFilter);
+  };
+
+  // Helper to trigger search on enter
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') handleSearch();
   };
 
   return (
@@ -78,6 +117,7 @@ export default function BloodBanks() {
               placeholder="Search by name, city, or address..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={handleKeyDown}
               className="w-full bg-transparent text-neutral-900 dark:text-white font-medium focus:outline-none placeholder-neutral-400"
             />
           </div>
@@ -86,12 +126,15 @@ export default function BloodBanks() {
 
           <div className="w-full md:w-64 flex items-center px-4 py-2">
             <select 
-              value={state}
-              onChange={(e) => setState(e.target.value)}
+              value={stateFilter}
+              onChange={(e) => {
+                setStateFilter(e.target.value);
+                fetchBloodBanks(searchQuery, e.target.value);
+              }}
               className="w-full bg-transparent text-neutral-900 dark:text-white font-bold focus:outline-none cursor-pointer"
             >
               <option value="">All States</option>
-              {['Maharashtra', 'Delhi', 'Karnataka', 'Tamil Nadu', 'Gujarat'].map(s => (
+              {INDIAN_STATES.map(s => (
                 <option key={s} value={s}>{s}</option>
               ))}
             </select>
@@ -109,20 +152,57 @@ export default function BloodBanks() {
         <div className="flex items-center gap-3 mb-16 overflow-x-auto pb-2">
           <span className="text-sm font-bold text-indigo-700 dark:text-indigo-400 whitespace-nowrap">Popular Searches:</span>
           {['Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Chennai'].map(city => (
-            <button key={city} className="px-4 py-1.5 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-full text-xs font-semibold text-neutral-600 dark:text-neutral-400 hover:border-indigo-500 hover:text-indigo-600 transition-colors whitespace-nowrap">
+            <button 
+              key={city} 
+              onClick={() => { setSearchQuery(city); fetchBloodBanks(city, stateFilter); }}
+              className="px-4 py-1.5 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-full text-xs font-semibold text-neutral-600 dark:text-neutral-400 hover:border-indigo-500 hover:text-indigo-600 transition-colors whitespace-nowrap"
+            >
               {city}
             </button>
           ))}
         </div>
 
-        {/* Empty State */}
-        <div className="flex flex-col items-center justify-center py-20 text-center">
-          <div className="w-20 h-20 bg-indigo-50 dark:bg-indigo-500/10 rounded-full flex items-center justify-center text-[#5b40c7] mb-6">
-            <Building2 className="w-10 h-10" />
+        {/* Results */}
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-20 space-y-4">
+             <div className="w-8 h-8 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
+             <p className="text-neutral-500 font-medium">Loading blood banks...</p>
           </div>
-          <h2 className="text-2xl font-black text-neutral-900 dark:text-white mb-2">No blood banks found</h2>
-          <p className="text-neutral-500">Try searching with a different location or check back later.</p>
-        </div>
+        ) : bloodBanks.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-20 text-center">
+            <div className="w-20 h-20 bg-indigo-50 dark:bg-indigo-500/10 rounded-full flex items-center justify-center text-[#5b40c7] mb-6">
+              <Building2 className="w-10 h-10" />
+            </div>
+            <h2 className="text-2xl font-black text-neutral-900 dark:text-white mb-2">No blood banks found</h2>
+            <p className="text-neutral-500">Try searching with a different location or check back later.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-20 animate-fade-in">
+            {bloodBanks.map(bank => (
+              <div key={bank.id} className="bg-white dark:bg-neutral-900 rounded-2xl p-6 shadow-sm hover:shadow-xl hover:shadow-indigo-900/5 hover:-translate-y-1 transition-all border border-neutral-100 dark:border-neutral-800 flex flex-col justify-between">
+                <div>
+                  <div className="flex justify-between items-start mb-4">
+                    <h3 className="font-bold text-lg text-neutral-900 dark:text-white">{bank.name}</h3>
+                    {bank.verified && (
+                      <span className="flex-shrink-0 flex items-center gap-1 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-black uppercase px-2 py-1 rounded-md">
+                        <CheckCircle2 className="w-3 h-3" /> Verified
+                      </span>
+                    )}
+                  </div>
+                  <div className="space-y-2 text-sm text-neutral-500 mb-6">
+                    <div className="flex items-start gap-2">
+                      <MapPin className="w-4 h-4 mt-0.5 text-indigo-400" />
+                      <span>{bank.address}<br/><span className="text-neutral-900 dark:text-neutral-300 font-semibold">{bank.city}, {bank.state}</span></span>
+                    </div>
+                  </div>
+                </div>
+                <button className="w-full py-2.5 bg-neutral-100 hover:bg-indigo-50 dark:bg-neutral-800 dark:hover:bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 rounded-xl font-bold text-sm transition-colors border border-transparent hover:border-indigo-200 dark:hover:border-indigo-500/20">
+                  Contact
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
 
       </div>
     </div>

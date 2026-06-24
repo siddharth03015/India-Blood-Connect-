@@ -5,6 +5,7 @@ import { supabase } from 'shared';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useTheme } from './ThemeProvider';
+import { Heart } from 'lucide-react';
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -49,13 +50,7 @@ export default function Navbar() {
     router.push('/');
   };
 
-  const navLinks = [
-    { href: '/search', label: 'Find Donors', activeClass: 'bg-red-600 text-white shadow-md shadow-red-500/20' },
-    { href: '/blood-banks', label: 'Blood Banks', activeClass: 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20' },
-    { href: '/camps', label: 'Camps', activeClass: 'bg-emerald-600 text-white shadow-md shadow-emerald-500/20' },
-    { href: '/request', label: 'Request Blood', activeClass: 'bg-red-900 text-white shadow-md shadow-red-900/20' },
-  ];
-
+  // Note: Static rendering is now used instead of the navLinks array.
   const isActive = (href: string) => pathname === href;
 
   // Theme icons
@@ -90,36 +85,65 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-9 h-9 bg-gradient-to-br from-red-500 to-red-700 rounded-xl flex items-center justify-center shadow-lg shadow-red-500/20 group-hover:shadow-red-500/40 transition-shadow">
-              <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-              </svg>
+          <Link href="/" className="flex items-center gap-2 group shrink-0">
+            {/* Logo Image */}
+            <div className="w-10 h-10 relative transition-transform group-hover:scale-105 flex items-center justify-center bg-[#d32f2f] rounded-xl shadow-sm shrink-0">
+              <Heart className="w-5 h-5 text-white fill-current" />
             </div>
-            <span className="font-bold text-lg text-neutral-900 dark:text-white tracking-tight hidden sm:block">
-              India Blood Connect
-            </span>
+            
+            {/* Logo Text */}
+            <div className="flex flex-col">
+              <span className="font-bold text-xl xl:text-2xl text-neutral-900 dark:text-white tracking-tight leading-none whitespace-nowrap">
+                India Blood Connect
+              </span>
+            </div>
           </Link>
 
           {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-1">
-            {navLinks.map(link => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 ${
-                  isActive(link.href)
-                    ? link.activeClass
-                    : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:text-white dark:hover:bg-neutral-800'
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
+          <div className="hidden xl:flex items-center gap-1">
+            <Link href="/search" className={`px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all duration-200 ${isActive('/search') ? 'bg-red-600 text-white shadow-md shadow-red-500/20' : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:text-white dark:hover:bg-neutral-800'}`}>Find Donors</Link>
+            <Link href="/blood-banks" className={`px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all duration-200 ${isActive('/blood-banks') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20' : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:text-white dark:hover:bg-neutral-800'}`}>Blood Banks</Link>
+
+            {/* Blood Camps Dropdown */}
+            <div className="relative group">
+              <button className="px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-1 whitespace-nowrap text-[#a31526] hover:bg-neutral-100 dark:text-red-500 dark:hover:bg-neutral-800 transition-all">
+                Blood Camps
+                <svg className="w-4 h-4 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
+              </button>
+              <div className="absolute top-full right-0 mt-1 w-56 bg-white dark:bg-neutral-900 rounded-xl shadow-xl border border-neutral-200 dark:border-neutral-700 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                <Link href="/camps" className="block px-4 py-2.5 text-sm font-semibold text-[#002855] hover:text-[#004080] hover:bg-neutral-50 dark:text-neutral-200 dark:hover:text-blue-400 dark:hover:bg-neutral-800">
+                  Find Blood Camps
+                </Link>
+                <Link href="/camps/register" className="block px-4 py-2.5 text-sm font-semibold text-[#002855] hover:text-[#004080] hover:bg-neutral-50 dark:text-neutral-200 dark:hover:text-blue-400 dark:hover:bg-neutral-800">
+                  Register Blood Camps
+                </Link>
+              </div>
+            </div>
+
+            <Link href="/request" className={`px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all duration-200 ${isActive('/request') ? 'bg-red-900 text-white shadow-md shadow-red-900/20' : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:text-white dark:hover:bg-neutral-800'}`}>Request Blood</Link>
+
+            {/* Process Dropdown */}
+            <div className="relative group">
+              <button className="px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-1 whitespace-nowrap text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:text-white dark:hover:bg-neutral-800 transition-all">
+                Blood Donation Process
+                <svg className="w-4 h-4 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
+              </button>
+              <div className="absolute top-full right-0 mt-1 w-72 bg-white dark:bg-neutral-900 rounded-xl shadow-xl border border-neutral-200 dark:border-neutral-700 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                <Link href="/process" className="block px-4 py-2.5 text-sm font-medium text-neutral-600 hover:bg-neutral-50 hover:text-red-600 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-red-400">
+                  The Process Of Blood Donation
+                </Link>
+                <Link href="/post-donation" className="block px-4 py-2.5 text-sm font-medium text-neutral-600 hover:bg-neutral-50 hover:text-red-600 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-red-400">
+                  What Happens To Post You Donate Your Blood
+                </Link>
+                <Link href="/pursuit" className="block px-4 py-2.5 text-sm font-medium text-neutral-600 hover:bg-neutral-50 hover:text-red-600 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-red-400">
+                  Pre And Post Pursuit Of Blood Donation
+                </Link>
+              </div>
+            </div>
           </div>
 
           {/* Auth + Theme Actions */}
-          <div className="hidden md:flex items-center gap-2">
+          <div className="hidden xl:flex items-center gap-2">
             {/* Theme Toggle */}
             <div className="relative">
               <button
@@ -203,7 +227,7 @@ export default function Navbar() {
           </div>
 
           {/* Mobile: Theme + Menu Toggle */}
-          <div className="flex md:hidden items-center gap-1">
+          <div className="flex xl:hidden items-center gap-1">
             <button
               onClick={(e) => {
                 e.stopPropagation();
@@ -235,22 +259,31 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       {menuOpen && (
-        <div className="md:hidden glass-strong border-t border-neutral-200/50 dark:border-neutral-800/50 animate-fade-in">
+        <div className="xl:hidden glass-strong border-t border-neutral-200/50 dark:border-neutral-800/50 animate-fade-in">
           <div className="px-4 py-3 space-y-1">
-            {navLinks.map(link => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setMenuOpen(false)}
-                className={`block px-4 py-3 rounded-xl text-base font-semibold transition-all ${
-                  isActive(link.href)
-                    ? link.activeClass
-                    : 'text-neutral-600 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800'
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
+            {/* Mobile Nav Links */}
+            <Link href="/search" onClick={() => setMenuOpen(false)} className={`block px-4 py-3 rounded-xl text-base font-semibold transition-all ${isActive('/search') ? 'bg-red-600 text-white shadow-md shadow-red-500/20' : 'text-neutral-600 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800'}`}>Find Donors</Link>
+            <Link href="/blood-banks" onClick={() => setMenuOpen(false)} className={`block px-4 py-3 rounded-xl text-base font-semibold transition-all ${isActive('/blood-banks') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20' : 'text-neutral-600 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800'}`}>Blood Banks</Link>
+
+            {/* Mobile Blood Camps Dropdown */}
+            <div className="px-4 py-2">
+              <div className="text-xs font-bold text-[#a31526] dark:text-red-500 uppercase tracking-wider mb-2">Blood Camps</div>
+              <div className="flex flex-col space-y-1 pl-2 border-l-2 border-neutral-200 dark:border-neutral-800">
+                  <Link href="/camps" onClick={() => setMenuOpen(false)} className="block px-4 py-2 rounded-lg text-sm font-semibold text-[#002855] hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800">Find Blood Camps</Link>
+                  <Link href="/camps/register" onClick={() => setMenuOpen(false)} className="block px-4 py-2 rounded-lg text-sm font-semibold text-[#002855] hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800">Register Blood Camps</Link>
+              </div>
+            </div>
+
+            <Link href="/request" onClick={() => setMenuOpen(false)} className={`block px-4 py-3 rounded-xl text-base font-semibold transition-all ${isActive('/request') ? 'bg-red-900 text-white shadow-md shadow-red-900/20' : 'text-neutral-600 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800'}`}>Request Blood</Link>
+            {/* Mobile Dropdown Items */}
+            <div className="px-4 py-2">
+              <div className="text-xs font-bold text-neutral-400 uppercase tracking-wider mb-2">Blood Donation Process</div>
+              <div className="flex flex-col space-y-1 pl-2 border-l-2 border-neutral-200 dark:border-neutral-800">
+                  <Link href="/process" onClick={() => setMenuOpen(false)} className="block px-4 py-2 rounded-lg text-sm font-medium text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800">The Process Of Blood Donation</Link>
+                  <Link href="/post-donation" onClick={() => setMenuOpen(false)} className="block px-4 py-2 rounded-lg text-sm font-medium text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800">What Happens To Post You Donate Your Blood</Link>
+                  <Link href="/pursuit" onClick={() => setMenuOpen(false)} className="block px-4 py-2 rounded-lg text-sm font-medium text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800">Pre And Post Pursuit Of Blood Donation</Link>
+              </div>
+            </div>
 
             {/* Mobile Theme Selector */}
             <div className="px-4 py-3">

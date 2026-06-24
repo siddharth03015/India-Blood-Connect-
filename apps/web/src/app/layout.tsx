@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 import { ThemeProvider } from "./components/ThemeProvider";
 
 export const metadata: Metadata = {
@@ -36,9 +37,10 @@ export default function RootLayout({
       <body className="antialiased bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 transition-colors duration-300">
         <ThemeProvider>
           <Navbar />
-          <div className="pt-16">
+          <div className="pt-16 min-h-screen">
             {children}
           </div>
+          <Footer />
         </ThemeProvider>
       </body>
     </html>
