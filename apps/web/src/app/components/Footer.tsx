@@ -11,7 +11,7 @@ export default function Footer() {
           <div>
             <h4 className="text-xl font-bold mb-6 tracking-wide">Save Life</h4>
             <ul className="space-y-4 text-sm text-red-100 font-medium">
-              <li><Link href="/request-blood" className="hover:text-white transition-colors">Request Blood</Link></li>
+              <li><Link href="/request" className="hover:text-white transition-colors">Request Blood</Link></li>
               <li><Link href="/blood-banks" className="hover:text-white transition-colors">Find Blood Bank</Link></li>
               <li><Link href="/camps" className="hover:text-white transition-colors">Find Blood Camp</Link></li>
             </ul>

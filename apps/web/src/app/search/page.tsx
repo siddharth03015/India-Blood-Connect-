@@ -15,19 +15,42 @@ export default function SearchDonors() {
   const [results, setResults] = useState<any[]>([]);
   const [searched, setSearched] = useState(false);
   const [stats, setStats] = useState({ donors: 0, lives: 0, cities: 0, banks: 0 });
+  const [statsLoaded, setStatsLoaded] = useState(false);
 
   useEffect(() => {
     const fetchStats = async () => {
-      const { count: donorsCount } = await supabase.from('users').select('*', { count: 'estimated', head: true });
-      const totalDonors = donorsCount || 0;
-      const estimatedCities = totalDonors > 0 ? Math.max(1, Math.floor(totalDonors / 80)) : 0;
-      
-      setStats({ 
-        donors: totalDonors, 
-        lives: totalDonors * 3, 
-        cities: estimatedCities > 28000 ? estimatedCities : 28000,
-        banks: Math.floor((estimatedCities > 28000 ? estimatedCities : 28000) / 8.75)
-      });
+      try {
+        // Fetch donors and unique cities using the RPC to bypass RLS for unauthenticated users
+        const { data: donorsData } = await supabase.rpc('search_donors_nearby', {
+          search_lat: null,
+          search_lng: null,
+          radius_meters: 0
+        });
+        
+        const totalDonors = donorsData?.length || 0;
+        const uniqueCities = new Set(donorsData?.map(d => d.city).filter(Boolean));
+        
+        const { count: banksCount } = await supabase
+          .from('blood_banks')
+          .select('*', { count: 'exact', head: true })
+          .eq('verified', true);
+
+        const { count: fulfilledCount } = await supabase
+          .from('blood_requests')
+          .select('*', { count: 'exact', head: true })
+          .eq('status', 'fulfilled');
+
+        setStats({ 
+          donors: totalDonors, 
+          lives: (fulfilledCount || 0) * 3, 
+          cities: uniqueCities.size,
+          banks: banksCount || 0
+        });
+      } catch (err) {
+        console.error('Error fetching realtime stats:', err);
+      } finally {
+        setStatsLoaded(true);
+      }
     };
     fetchStats();
   }, []);
@@ -36,7 +59,7 @@ export default function SearchDonors() {
     if (num >= 1000000) return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M+';
     if (num >= 100000) return (num / 100000).toFixed(1).replace(/\.0$/, '') + 'L+';
     if (num >= 1000) return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K+';
-    return num.toLocaleString() + '+';
+    return num.toLocaleString();
   };
 
   const handleSearch = async (useLocation: boolean = false) => {
@@ -230,19 +253,19 @@ export default function SearchDonors() {
         <div className="bg-gradient-to-r from-[#5e0a0a] via-[#851111] to-[#5e0a0a] rounded-3xl p-8 mb-16 shadow-xl flex flex-wrap items-center justify-between gap-6">
           <div className="flex items-center gap-4 text-white">
             <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center"><Droplet className="w-6 h-6" fill="currentColor" /></div>
-            <div><div className="text-2xl font-black">{stats.donors ? formatStat(stats.donors) : '2.5M+'}</div><div className="text-sm text-white/80">Registered Donors</div></div>
+            <div><div className="text-2xl font-black">{statsLoaded ? formatStat(stats.donors) : '...'}</div><div className="text-sm text-white/80">Registered Donors</div></div>
           </div>
           <div className="flex items-center gap-4 text-white">
             <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center"><svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 13l2 2 4-4" /></svg></div>
-            <div><div className="text-2xl font-black">{stats.lives ? formatStat(stats.lives) : '8.7L+'}</div><div className="text-sm text-white/80">Lives Saved</div></div>
+            <div><div className="text-2xl font-black">{statsLoaded ? formatStat(stats.lives) : '...'}</div><div className="text-sm text-white/80">Lives Saved</div></div>
           </div>
           <div className="flex items-center gap-4 text-white">
             <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center"><MapPin className="w-6 h-6" /></div>
-            <div><div className="text-2xl font-black">{stats.cities ? formatStat(stats.cities) : '28,000+'}</div><div className="text-sm text-white/80">Cities Covered</div></div>
+            <div><div className="text-2xl font-black">{statsLoaded ? formatStat(stats.cities) : '...'}</div><div className="text-sm text-white/80">Cities Covered</div></div>
           </div>
           <div className="flex items-center gap-4 text-white">
             <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center"><Building2 className="w-6 h-6" /></div>
-            <div><div className="text-2xl font-black">{stats.banks ? formatStat(stats.banks) : '3.2K+'}</div><div className="text-sm text-white/80">Blood Banks</div></div>
+            <div><div className="text-2xl font-black">{statsLoaded ? formatStat(stats.banks) : '...'}</div><div className="text-sm text-white/80">Blood Banks</div></div>
           </div>
         </div>
 

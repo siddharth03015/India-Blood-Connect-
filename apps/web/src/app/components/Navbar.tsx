@@ -217,7 +217,7 @@ export default function Navbar() {
                   Login
                 </Link>
                 <Link
-                  href="/login"
+                  href="/login?mode=register"
                   className="px-5 py-2.5 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 text-white rounded-xl text-sm font-bold shadow-lg shadow-red-500/20 hover:shadow-red-500/30 transition-all active:scale-[0.97]"
                 >
                   Register as Donor
@@ -319,8 +319,8 @@ export default function Navbar() {
               </>
             ) : (
               <>
-                <Link href="/login" onClick={() => setMenuOpen(false)} className="block px-4 py-3 rounded-xl text-sm font-semibold text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800">Login</Link>
-                <Link href="/login" onClick={() => setMenuOpen(false)} className="block px-4 py-3 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-red-600 to-red-500 text-center">Register as Donor</Link>
+                <Link href="/login" onClick={() => setMenuOpen(false)} className="block px-4 py-3 rounded-xl text-sm font-semibold text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 text-center">Login</Link>
+                <Link href="/login?mode=register" onClick={() => setMenuOpen(false)} className="block px-4 py-3 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-red-600 to-red-500 text-center">Register as Donor</Link>
               </>
             )}
           </div>
