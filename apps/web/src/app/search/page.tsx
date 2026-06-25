@@ -110,19 +110,12 @@ export default function SearchDonors() {
           
           {/* Left Hero Content */}
           <div className="flex-1 text-left relative z-10">
-            {/* Badge */}
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-neutral-800 rounded-full border border-red-100 dark:border-red-900 shadow-sm mb-6">
-              <span className="relative flex h-2 w-2 ml-1">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-              </span>
-              <span className="text-sm font-bold text-red-600 dark:text-red-400">Live Donor Network Across India</span>
-            </div>
+
 
             {/* Title */}
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-[1.1] text-slate-800 dark:text-white mb-6">
               Find a <span className="text-red-600 dark:text-red-500">Hero</span> <br/>
-              Near You <span className="inline-block text-red-600 animate-pulse-soft">❤</span>
+              Near You
             </h1>
 
             {/* Subtitle */}
@@ -131,48 +124,7 @@ export default function SearchDonors() {
             </p>
           </div>
 
-          {/* Right Hero Graphic */}
-          <div className="flex-1 relative w-full h-[400px] flex items-center justify-center">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-red-100/50 dark:bg-red-900/10 rounded-full blur-[80px]"></div>
-            
-            {/* Central Drop */}
-            <div className="relative z-10 animate-float drop-shadow-2xl">
-              <svg width="240" height="280" viewBox="0 0 200 260" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                  <radialGradient id="dropGradientHero" cx="30%" cy="30%" r="70%">
-                    <stop offset="0%" stopColor="#ff4b4b" />
-                    <stop offset="40%" stopColor="#dc2626" />
-                    <stop offset="100%" stopColor="#7f1d1d" />
-                  </radialGradient>
-                  <linearGradient id="glossGradientHero" x1="20%" y1="0%" x2="50%" y2="80%">
-                    <stop offset="0%" stopColor="white" stopOpacity="0.6" />
-                    <stop offset="100%" stopColor="white" stopOpacity="0" />
-                  </linearGradient>
-                </defs>
-                <path d="M100 10 C100 10, 20 130, 20 190 A80 80 0 0 0 180 190 C180 130, 100 10, 100 10 Z" fill="url(#dropGradientHero)" />
-                <path d="M100 20 C100 20, 35 125, 35 180 A65 70 0 0 0 80 245 C95 245, 95 20, 95 20 Z" fill="url(#glossGradientHero)" />
-                <path d="M100 180 C100 180, 75 155, 75 140 A15 15 0 0 1 100 125 A15 15 0 0 1 125 140 C125 155, 100 180, 100 180 Z" fill="white" className="drop-shadow-md" />
-              </svg>
-            </div>
-            
-            {/* Hands framing the drop (SVG representation) */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[40%] w-[380px] h-[280px] opacity-80 mix-blend-multiply dark:mix-blend-screen pointer-events-none">
-              <svg viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
-                {/* Left Hand Silhouette */}
-                <path d="M 50 250 C 70 200, 120 160, 160 180 C 180 190, 190 220, 170 250 C 140 290, 90 290, 50 250 Z" fill="#fca5a5" opacity="0.4" />
-                {/* Right Hand Silhouette */}
-                <path d="M 350 250 C 330 200, 280 160, 240 180 C 220 190, 210 220, 230 250 C 260 290, 310 290, 350 250 Z" fill="#fca5a5" opacity="0.4" />
-              </svg>
-            </div>
-            
-            {/* Floating medical icons */}
-            <div className="absolute top-12 left-12 w-10 h-10 bg-white dark:bg-neutral-800 rounded-full shadow-lg flex items-center justify-center text-red-500 animate-[float_3s_ease-in-out_infinite_0s]">
-              <Droplet className="w-5 h-5" />
-            </div>
-            <div className="absolute top-24 right-16 w-12 h-12 bg-white dark:bg-neutral-800 rounded-full shadow-lg flex items-center justify-center text-red-500 animate-[float_4s_ease-in-out_infinite_1s]">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 13l2 2 4-4" /></svg>
-            </div>
-          </div>
+
         </div>
       </div>
 

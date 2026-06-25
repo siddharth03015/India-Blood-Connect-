@@ -1,7 +1,7 @@
 import FallbackImage from '../components/FallbackImage';
 
 export const metadata = {
-  title: 'Pre and Post Process | India Blood Connect',
+  title: 'Pre and Post Process | BloodSync',
   description: 'Pre and post process for blood donation.',
 };
 

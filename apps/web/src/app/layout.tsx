@@ -5,7 +5,7 @@ import Footer from "./components/Footer";
 import { ThemeProvider } from "./components/ThemeProvider";
 
 export const metadata: Metadata = {
-  title: "India Blood Connect — Find Blood Donors Near You",
+  title: "BloodSync — Find Blood Donors Near You",
   description: "A nationwide network connecting blood donors with those in need across India. Find donors by blood group, location, and availability. Every drop counts — save a life today.",
   keywords: "blood donor, blood donation, India, blood bank, blood request, emergency blood, donor network",
 };

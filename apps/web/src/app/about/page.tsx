@@ -94,7 +94,7 @@ export default function AboutUsPage() {
                 <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#d32f2f]"></div>
               </h3>
               <h2 className="text-4xl lg:text-5xl font-bold tracking-tight mt-2 text-neutral-900 dark:text-white">
-                India Blood Connect Advantage
+                BloodSync Advantage
               </h2>
             </div>
 
@@ -130,7 +130,7 @@ export default function AboutUsPage() {
                 </div>
                 <h4 className="text-[#990a12] font-semibold mb-4 text-lg">Near By</h4>
                 <p className="text-neutral-500 dark:text-neutral-400 text-[13px] leading-relaxed">
-                  India Blood Connect disseminates blood requests to all potential blood donors who are located within a 5 km radius of where the blood is needed. This enhances the likelihood of a donor going to a medical facility or a blood bank to give blood to a person in need. Additionally, it reduces the time taken to satisfy a request for blood.
+                  BloodSync disseminates blood requests to all potential blood donors who are located within a 5 km radius of where the blood is needed. This enhances the likelihood of a donor going to a medical facility or a blood bank to give blood to a person in need. Additionally, it reduces the time taken to satisfy a request for blood.
                 </p>
               </div>
 
@@ -158,7 +158,7 @@ export default function AboutUsPage() {
             <div className="absolute -bottom-4 left-1/4 right-1/4 h-[2px] bg-[#d32f2f]"></div>
           </h2>
           <p className="text-neutral-500 dark:text-neutral-400 leading-loose text-sm md:text-base px-4 md:px-12">
-            India Blood Connect is a unique system that makes it possible to find a blood bank or hospital in a particular area in real time. The main purpose is to make it easier to find blood banks and hospitals to donate blood and request blood. The India Blood Connect app and web platform allow users to search for blood banks and hospitals online to get blood and donate blood from trustworthy blood banks. It also helps blood banks to accept blood, process blood donations, blood requests and issue blood to people in need through its blood bank management software. The app provides geo-searching, Donation Form & Request Form, appointment scheduling, notifications, and updates to make it easier to find blood banks and hospitals in an emergency. We are reaching out to the community to ask for their help in registering donors for India Blood Connect, which is another step towards creating a better society.
+            BloodSync is a unique system that makes it possible to find a blood bank or hospital in a particular area in real time. The main purpose is to make it easier to find blood banks and hospitals to donate blood and request blood. The BloodSync app and web platform allow users to search for blood banks and hospitals online to get blood and donate blood from trustworthy blood banks. It also helps blood banks to accept blood, process blood donations, blood requests and issue blood to people in need through its blood bank management software. The app provides geo-searching, Donation Form & Request Form, appointment scheduling, notifications, and updates to make it easier to find blood banks and hospitals in an emergency. We are reaching out to the community to ask for their help in registering donors for BloodSync, which is another step towards creating a better society.
           </p>
         </div>
       </section>

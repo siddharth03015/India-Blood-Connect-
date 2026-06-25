@@ -1,4 +1,4 @@
-# India Blood Connect
+# BloodSync
 
 A blood donor network application for India, comprising a Next.js web application and an Expo React Native mobile app.
 

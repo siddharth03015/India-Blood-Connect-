@@ -1,7 +1,7 @@
 <div align="center">
-  <img src="https://www.transparenttextures.com/patterns/cubes.png" alt="India Blood Connect Banner" width="100%" height="200" style="object-fit: cover; border-radius: 12px; background: linear-gradient(135deg, #dc2626, #991b1b);">
+  <img src="https://www.transparenttextures.com/patterns/cubes.png" alt="BloodSync Banner" width="100%" height="200" style="object-fit: cover; border-radius: 12px; background: linear-gradient(135deg, #dc2626, #991b1b);">
   <br/>
-  <h1>🩸 India Blood Connect</h1>
+  <h1>🩸 BloodSync</h1>
   <p><strong>A hyper-local, real-time blood donation network connecting donors with receivers instantly.</strong></p>
 </div>
 
@@ -9,7 +9,7 @@
 
 ## 🚀 Overview
 
-**India Blood Connect** is a full-stack, real-time platform designed to eliminate the critical gap between blood donors and recipients. During medical emergencies, finding a matching blood donor nearby can be a matter of life and death. This platform solves that by utilizing geospatial queries to find donors within a 50km radius or in specific cities, and enables instant communication via a real-time messaging system.
+**BloodSync** is a full-stack, real-time platform designed to eliminate the critical gap between blood donors and recipients. During medical emergencies, finding a matching blood donor nearby can be a matter of life and death. This platform solves that by utilizing geospatial queries to find donors within a 50km radius or in specific cities, and enables instant communication via a real-time messaging system.
 
 This project was engineered with a focus on speed, modern UI/UX, and scalability, utilizing a robust monorepo architecture.
 
@@ -91,8 +91,8 @@ This application is built using a modern, scalable tech stack suitable for enter
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/siddharth03015/India-Blood-Connect-.git
-   cd India-Blood-Connect-
+   git clone https://github.com/siddharth03015/BloodSync-.git
+   cd BloodSync-
    ```
 
 2. **Install dependencies:**
@@ -119,4 +119,4 @@ This application is built using a modern, scalable tech stack suitable for enter
 This project is licensed under the MIT License.
 
 
-live link :https://india-blood-connect-web.vercel.app/
+live link :https://bloodsync-web.vercel.app/

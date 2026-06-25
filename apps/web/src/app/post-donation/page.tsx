@@ -1,7 +1,7 @@
 import FallbackImage from '../components/FallbackImage';
 
 export const metadata = {
-  title: 'Post Donation Process | India Blood Connect',
+  title: 'Post Donation Process | BloodSync',
   description: 'What happens to your blood after you donate it.',
 };
 

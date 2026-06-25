@@ -1,6 +1,6 @@
 export const metadata = {
-  title: 'Privacy Policy | India Blood Connect',
-  description: 'Privacy Policy for India Blood Connect.',
+  title: 'Privacy Policy | BloodSync',
+  description: 'Privacy Policy for BloodSync.',
 };
 
 export default function PrivacyPage() {
@@ -17,7 +17,7 @@ export default function PrivacyPage() {
               <h2 className="text-xl font-bold mb-3 text-neutral-900 dark:text-white flex items-center gap-2">
                 <span className="text-[#c82333]">1.</span> Information We Collect
               </h2>
-              <p>At India Blood Connect, we collect information you provide directly to us when you create an account, register as a donor, or request blood. This includes your name, blood group, contact number, email, and location.</p>
+              <p>At BloodSync, we collect information you provide directly to us when you create an account, register as a donor, or request blood. This includes your name, blood group, contact number, email, and location.</p>
             </section>
 
             <section>

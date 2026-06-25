@@ -43,10 +43,10 @@ export default function Footer() {
               <div className="w-8 h-8 flex items-center justify-center bg-white rounded-lg shadow-sm shrink-0">
                 <Heart className="w-4 h-4 text-[#990a12] fill-current" />
               </div>
-              <h4 className="text-xl font-black tracking-widest uppercase">INDIA BLOOD CONNECT</h4>
+              <h4 className="text-xl font-black tracking-widest uppercase">BLOODSYNC</h4>
             </div>
             <p className="text-sm text-red-100 font-medium leading-relaxed mb-6">
-              India Blood Connect is a platform that helps to streamline blood donation and blood request which puts the power to save a life in the palm of your hand.
+              BloodSync is a platform that helps to streamline blood donation and blood request which puts the power to save a life in the palm of your hand.
             </p>
             <div className="flex items-center gap-4">
               <Link href="#" className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">

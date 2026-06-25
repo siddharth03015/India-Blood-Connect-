@@ -2,7 +2,7 @@ import Link from 'next/link';
 import FallbackImage from '../components/FallbackImage';
 
 export const metadata = {
-  title: 'Blood Donation Process | India Blood Connect',
+  title: 'Blood Donation Process | BloodSync',
   description: 'Learn about the step-by-step blood donation process.',
 };
 

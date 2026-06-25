@@ -87,14 +87,14 @@ export default function Navbar() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group shrink-0">
             {/* Logo Image */}
-            <div className="w-10 h-10 relative transition-transform group-hover:scale-105 flex items-center justify-center bg-[#d32f2f] rounded-xl shadow-sm shrink-0">
-              <Heart className="w-5 h-5 text-white fill-current" />
+            <div className="w-10 h-10 relative transition-transform group-hover:scale-105 flex items-center justify-center shrink-0">
+              <span className="text-3xl text-red-600 animate-pulse-soft drop-shadow-md">❤</span>
             </div>
             
             {/* Logo Text */}
             <div className="flex flex-col">
               <span className="font-bold text-xl xl:text-2xl text-neutral-900 dark:text-white tracking-tight leading-none whitespace-nowrap">
-                India Blood Connect
+                BloodSync
               </span>
             </div>
           </Link>
